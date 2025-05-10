@@ -13,7 +13,6 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 const { user: userService } = useServices()
-const { fetch: fetchSession } = useUserSession()
 
 const router = useRouter()
 const route = useRoute()
@@ -30,12 +29,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   isSending.value = true
 
   try {
-    const {accessToken} = await userService.login({
+    const user = await userService.login({
       email: state.email,
       password: state.password
     })
-    if (accessToken) {
-      await fetchSession()
+
+    if (user) {
       toast.add({ title: 'Success', description: 'Вход в аккаунт выполнен успешно.', color: 'success' })
     }
 
@@ -46,7 +45,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   } finally {
     isSending.value = false
   }
-  console.log(event.data)
 }
 </script>
 
@@ -65,13 +63,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       <UInput v-model="state.password" type="password" class="w-full" />
     </UFormField>
 
+      <UButton type="submit" size="xl">
+        Submit
+      </UButton>
 
     </UForm>
 
     <template #footer>
-      <UButton type="submit" size="xl">
-        Submit
-      </UButton>
     </template>
   </UCard>
 

@@ -2,28 +2,34 @@ import { Request, type User } from '@/types'
 
 export default {
   getUsers: (params: Request.Params): Request.Config => ({
-    url: '/api/users',
+    url: '/users',
     method: Request.Methods.GET,
-    query: params
+    params
   }),
   getUserById: (id: string, params: Request.Params): Request.Config => ({
     url: `/api/users/${id}`,
     method: Request.Methods.GET,
-    query: params
+    params
   }),
-  login: (body: User.LoginDto): Request.Config => ({
+  login: (): Request.Config => ({
     url: '/users/login',
-    method: Request.Methods.POST,
-    body
+    method: Request.Methods.POST
   }),
-  createUser: (body: User.RegisterDto): Request.Config => ({
+  getProfile: (): Request.Config => ({
+    url: '/users/profile',
+    method: Request.Methods.GET
+  }),
+  createUser: (): Request.Config => ({
     url: '/users/register',
-    method: Request.Methods.POST,
-    body
+    method: Request.Methods.POST
   }),
   updateUser: (id: string, body: User.UpdateDto): Request.Config => ({
-    url: `/api/users/${id}`,
+    url: `/users/${id}`,
     method: Request.Methods.PUT,
     body
+  }),
+  deleteUser: (id: string): Request.Config => ({
+    url: `/users/${id}`,
+    method: Request.Methods.DELETE
   })
 }

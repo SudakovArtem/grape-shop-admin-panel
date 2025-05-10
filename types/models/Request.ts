@@ -15,7 +15,7 @@ export namespace Request {
     method: Methods
     headers?: Record<string, string>
     customServer?: string
-    query?: Params
+    params?: Params
     body?: Record<string, T>
   }
 }

@@ -73,6 +73,13 @@ export default class FetchService extends IRequestService<IFetchService> {
       },
       ...globalOptions
     }
+
+    const cookieToken = useCookie('token').value ?? ''
+
+    if (cookieToken) {
+      (options.headers as Record<string, string>).authorization = `Bearer ${cookieToken}`
+    }
+
     const { noSignal = false } = config
 
     if (!noSignal) {

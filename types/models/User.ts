@@ -1,5 +1,3 @@
-import type { Select } from '@/types'
-
 export namespace User {
   export enum Types {
     CANDIDATE = 'candidate',
@@ -19,7 +17,7 @@ export namespace User {
     agreement: boolean
   }
 
-  export interface LoginDto {
+  export interface LoginDto extends Record<string, unknown> {
     email: string
     password: string
   }
@@ -62,8 +60,6 @@ export namespace User {
     telegram: SocialMedia['telegram']
     vk: SocialMedia['vk']
     hh: SocialMedia['hh']
-    direction: Select.Option | null
-    status: Select.Option | null
   }
 
   export interface UpdateDto extends Record<string, unknown> {
@@ -112,8 +108,7 @@ export namespace User {
   }
 
   export interface Session {
-    user: User.Model
-    [key: string]: unknown
+    accessToken: string
   }
 
   export interface ServerModel {

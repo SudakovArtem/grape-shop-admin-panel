@@ -30,15 +30,6 @@ export default (context: nuxtContext) => {
           config.options.headers['Content-Type'] = 'application/vnd.api+json'
           config.options.headers.accept = 'application/vnd.api+json'
         }
-
-        const cookieToken = useCookie('token').value ?? ''
-
-        if (cookieToken) {
-          config.options.headers.authorization = `Bearer ${cookieToken}`
-        }
-
-        const sanctumToken = useCookie('token')
-        config.options.headers['X-XSRF-TOKEN'] = sanctumToken.value ?? ''
       },
       onRequestErrorCallback: async (config) => {
         console.log('FATAL', config)

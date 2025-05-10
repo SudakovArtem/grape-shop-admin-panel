@@ -3,8 +3,8 @@ const route = useRoute()
 const id = route.params.id
 const {public: {baseApiUrl}} = useRuntimeConfig()
 
-const {data: order} = useAsyncData(() =>
-        $fetch(`${baseApiUrl}/orders/${id}`, {
+const {data: user} = useAsyncData(() =>
+        $fetch(`${baseApiUrl}/users/${id}`, {
           method: 'GET',
           headers: {
             authorization: `Bearer ${useCookie('token').value ?? ''}`
@@ -16,7 +16,7 @@ const {data: order} = useAsyncData(() =>
 </script>
 
 <template>
-<pre>{{order}}</pre>
+<pre>{{ user }}</pre>
 </template>
 
 <style scoped>

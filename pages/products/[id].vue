@@ -3,20 +3,20 @@ const route = useRoute()
 const id = route.params.id
 const {public: {baseApiUrl}} = useRuntimeConfig()
 
-const {data: order} = useAsyncData(() =>
-        $fetch(`${baseApiUrl}/users/${id}`, {
-          method: 'GET',
-          headers: {
-            authorization: `Bearer ${useCookie('token').value ?? ''}`
-          }
-        }),
-    {
-      default: () => ({})
-    })
+// const {data: product} = useAsyncData(() =>
+//         $fetch(`${baseApiUrl}/products/${id}`, {
+//           method: 'GET',
+//           headers: {
+//             authorization: `Bearer ${useCookie('token').value ?? ''}`
+//           }
+//         }),
+//     {
+//       default: () => ({})
+//     })
 </script>
 
 <template>
-<pre>{{order}}</pre>
+  <ProductForm is-update title="Редактирование продукта" />
 </template>
 
 <style scoped>
