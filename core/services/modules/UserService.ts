@@ -6,10 +6,9 @@ import useAuthStore from '@/store/auth'
 export default (context: nuxtContext) => {
   const { setAuth } = useAuthStore()
   const { setUser } = useUserStore()
+  const { AUTHORIZATION_TOKEN_NAME } = context.$configs.constants
 
   class UserService implements IUserService {
-    private static readonly USER_ADAPTERS = context.$adapters.user
-
     private static readonly USER_METHODS = context.$api.user
 
     private static readonly API_SERVICE = context.$services.useAPI
@@ -28,7 +27,7 @@ export default (context: nuxtContext) => {
       const data: User.Session = await UserService.USER_METHODS.login(body)
       const { accessToken } = data
       if (accessToken) {
-        const token = useCookie<string | null>('token', {
+        const token = useCookie<string | null>(AUTHORIZATION_TOKEN_NAME, {
           maxAge: 3600 * 24 * 30,
           secure: false
         })
@@ -55,13 +54,13 @@ export default (context: nuxtContext) => {
     }
 
     logout(): void {
-      useCookie('token').value = null
+      useCookie(AUTHORIZATION_TOKEN_NAME).value = null
       setAuth(false)
       UserService.API_SERVICE.setAuthorizationToken('')
     }
 
     async checkAuth(): Promise<void> {
-      const token = useCookie('token')
+      const token = useCookie(AUTHORIZATION_TOKEN_NAME)
 
       if (token.value) {
         UserService.API_SERVICE.setAuthorizationToken(token.value)

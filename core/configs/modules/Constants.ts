@@ -34,7 +34,9 @@ const constants = {
     'Селекция Калугина В.М.'
   ] as string[],
 
-  DEFAULT_DEBOUNCE_DELAY: 800
+  DEFAULT_DEBOUNCE_DELAY: 800,
+
+  AUTHORIZATION_TOKEN_NAME: 'token'
 } as const
 
 export type Constants = typeof constants

@@ -75,10 +75,6 @@ export default ({ $config, $services }: nuxtContext): ApiClientService => {
         options.signal = this.services.abort.getControllerSignal()
       }
 
-      // if (!(body instanceof FormData)) {
-      //   options.headers['Content-Type'] = 'application/vnd.api+json'
-      // }
-
       if (body instanceof FormData || Object.keys(body).length > 0) {
         options.body = body
       }
@@ -96,7 +92,8 @@ export default ({ $config, $services }: nuxtContext): ApiClientService => {
     }
 
     private clearUserData(): void {
-      useCookie('token').value = null
+      const { AUTHORIZATION_TOKEN_NAME } = this.config.constants
+      useCookie(AUTHORIZATION_TOKEN_NAME).value = null
       this.authStore.setAuth(false)
       this.setAuthorizationToken()
     }
