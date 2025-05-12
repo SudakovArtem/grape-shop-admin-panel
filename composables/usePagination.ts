@@ -8,6 +8,7 @@ export default <T>(settings?: PaginationSettings<T>) => {
   const pageSize = ref<number>(settings?.pageSize ?? DEFAULT_PAGE_SIZE)
   const list = ref<T[]>(settings?.list ?? [])
   const totalCount = ref<number>(settings?.total ?? list.value.length)
+  const replace = settings?.replace ?? false
 
   const isMaxItems = computed<boolean>(() => {
     return totalCount.value <= list.value.length
@@ -20,7 +21,7 @@ export default <T>(settings?: PaginationSettings<T>) => {
   }))
 
   const loadList = (items: T[] = [], total = 0) => {
-    list.value = pageNumber.value === DEFAULT_PAGE_NUMBER ? items : ([...list.value, ...items] as T[])
+    list.value = pageNumber.value === DEFAULT_PAGE_NUMBER || replace ? items : ([...list.value, ...items] as T[])
 
     if (total && totalCount.value !== total) {
       totalCount.value = total

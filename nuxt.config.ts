@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import {fileURLToPath} from "url";
+import { fileURLToPath } from 'url'
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -15,9 +15,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseApiUrl: process.env.API_BASE_URL,
-      nodeEnv: process.env.APP_NODE_ENV,
+      nodeEnv: process.env.APP_NODE_ENV
     }
   },
   modules: ['@nuxt/ui', '@pinia/nuxt', 'nuxt-auth-utils'],
-  css: ['~/assets/css/main.css']
+  css: ['@/assets/css/main.css']
 })

@@ -1,11 +1,5 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-<h1>hello</h1>
+  <UContainer class="pt-6 pb-6">
+    <h1>hello</h1>
+  </UContainer>
 </template>
-
-<style scoped>
-
-</style>

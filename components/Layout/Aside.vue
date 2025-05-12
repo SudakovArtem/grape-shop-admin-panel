@@ -1,26 +1,27 @@
 <script lang="ts" setup>
-import type {NavigationMenuItem} from '@nuxt/ui'
+import type { NavigationMenuItem } from '@nuxt/ui'
+import Logo from '@img/logo.svg'
 
 const items = ref<NavigationMenuItem[][]>([
   [
     {
-      label: 'Links',
+      label: 'Навигация',
       type: 'label'
     },
     {
       label: 'Пользователи',
       icon: 'i-lucide-book-open',
-      to: '/users',
+      to: '/users'
     },
     {
       label: 'Продукты',
       icon: 'i-lucide-database',
-      to: '/products',
+      to: '/products'
     },
     {
       label: 'Заказы',
       icon: 'i-lucide-box',
-      to: '/orders',
+      to: '/orders'
     }
   ],
   [
@@ -41,7 +42,8 @@ const items = ref<NavigationMenuItem[][]>([
 </script>
 
 <template>
-  <UContainer>
-    <UNavigationMenu :items="items" class="data-[orientation=vertical]:w-48" orientation="vertical"/>
+  <UContainer class="pt-6 pb-6">
+    <img class="w-50 mb-4 block" :src="Logo" alt="Logo" />
+    <UNavigationMenu :items="items" class="data-[orientation=vertical]:w-48" orientation="vertical" />
   </UContainer>
 </template>

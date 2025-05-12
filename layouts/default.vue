@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-
-</script>
-
 <template>
   <BaseLayout>
     <template #aside>
@@ -12,7 +8,3 @@
     </template>
   </BaseLayout>
 </template>
-
-<style scoped>
-
-</style>

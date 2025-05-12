@@ -4,20 +4,24 @@ import type {
   UserAdapter,
   Validations,
   Endpoints,
-  Constants,
   AbortService,
-  UserApi
+  UserApi,
+  ProductService,
+  ProductApi
 } from '@/types'
+import type { Constants } from '@configs/modules/Constants.ts'
 
 export namespace CoreContext {
   export interface Api {
     user: UserApi
+    product: ProductApi
   }
 
   export interface Services {
     useAPI: ApiClientService
-    user: UserService
     abort: AbortService
+    user: UserService
+    product: ProductService
   }
 
   export interface Adapters {

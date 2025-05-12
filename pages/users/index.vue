@@ -1,54 +1,43 @@
 <script lang="ts" setup xmlns="http://www.w3.org/1999/html">
 import type { TableColumn, DropdownMenuItem } from '@nuxt/ui'
+import { debounce } from 'lodash'
+import type { Response, User } from '@/types'
 
 const UBadge = resolveComponent('UBadge')
-// {
-//   "id": 1,
-//     "email": "testuser_387@example.com",
-//     "name": null,
-//     "address": null,
-//     "phone": null,
-//     "role": "user",
-//     "createdAt": "2025-05-08T22:41:09.349Z"
-// }
 
-type User = {
-  id: number
-  email: string
-  name: string
-  address: string
-  phone: string
-  role: string
-  createdAt: string
-}
 const router = useRouter()
-const {public: {baseApiUrl}} = useRuntimeConfig()
 const { user: userService } = useServices()
 const search = ref<string>('')
 const isSending = ref<boolean>(false)
 
-const {pageNumber, pageSize, isMaxItems, list, loadList, totalCount, increasePageNumber, setPageNumber} = usePagination<User>()
+const { pageNumber, pageSize, list, loadList, totalCount, setPageNumber } = usePagination<User.Model>()
 
-const {data: users, status: usersStatus, refresh} = useAsyncData(() =>
-        userService.getUsers({
-            limit: unref(pageSize),
-            page: unref(pageNumber),
-            email: unref(search),
-            sortBy: 'createdAt'
-        }),
-    {
-      default: () => ({
-        data: [],
-        meta: {}
-      }),
-      watch: [pageNumber]
-    })
+const {
+  data: users,
+  status: usersStatus,
+  refresh
+} = useAsyncData(
+  () =>
+    userService.getUsers({
+      limit: unref(pageSize).toString(),
+      page: unref(pageNumber).toString(),
+      email: unref(search),
+      sortBy: 'createdAt'
+    }),
+  {
+    default: () => ({
+      data: [],
+      meta: {}
+    }),
+    watch: [pageNumber]
+  }
+)
 
 const isLoading = computed<boolean>(() => {
   return ['idle', 'pending'].includes(unref(usersStatus)) || unref(isSending)
 })
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<User.Model>[] = [
   {
     id: 'action'
   },
@@ -81,11 +70,9 @@ const columns: TableColumn<User>[] = [
         user: 'neutral' as const
       }[row.getValue('role') as string]
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-          row.getValue('role')
-      )
+      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => row.getValue('role'))
     }
-  },
+  }
 ]
 
 const toast = useToast()
@@ -102,7 +89,7 @@ const deleteUser = async (id: string) => {
   }
 }
 
-function getDropdownActions(user: User): DropdownMenuItem[][] {
+function getDropdownActions(user: User.Model): DropdownMenuItem[][] {
   return [
     [
       {
@@ -135,44 +122,44 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
 }
 
 watch(
-    users,
-    (value) => {
-      if (!value) {
-        return
-      }
+  users,
+  (value) => {
+    if (!value) {
+      return
+    }
 
-      loadList(value?.data ?? [], value.meta.total ?? 0)
-    },
-    {immediate: true}
+    loadList(value?.data ?? [], (value.meta as Response.Pagination).total ?? 0)
+  },
+  { immediate: true }
 )
+
+const onSearch = debounce(() => {
+  setPageNumber(1)
+  refresh()
+}, 800)
+
+watch(search, onSearch)
 </script>
 
 <template>
-  <UContainer>
-    <div class="flex items-center justify-end pt-4">
-      <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" />
-    </div>
-    <USeparator class="mb-4 mt-4" />
-    <div class="w-full space-y-4 pb-4">
-      <UTable :data="list" class="flex-1" :columns="columns" :loading="isLoading">
-        <template #action-cell="{ row }">
-          <UDropdownMenu :items="getDropdownActions(row.original)">
-            <UButton
-                icon="i-lucide-ellipsis-vertical"
-                color="neutral"
-                variant="ghost"
-                aria-label="Actions"
-            />
-          </UDropdownMenu>
-        </template>
-      </UTable>
-    </div>
-    <div class="flex justify-center border-t border-default pt-4">
-      <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
-    </div>
-  </UContainer>
+  <ClientOnly>
+    <UContainer class="pt-6 pb-6">
+      <div class="flex px-4 py-3.5 border-b border-accented justify-between gap-4">
+        <UInput v-model="search" class="max-w-sm" placeholder="Поиск по email..." />
+        <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" />
+      </div>
+      <div class="w-full space-y-4 pb-4">
+        <UTable :data="list" class="flex-1" :columns="columns" :loading="isLoading">
+          <template #action-cell="{ row }">
+            <UDropdownMenu :items="getDropdownActions(row.original)">
+              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Actions" />
+            </UDropdownMenu>
+          </template>
+        </UTable>
+      </div>
+      <div class="flex justify-center border-t border-default pt-4">
+        <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
+      </div>
+    </UContainer>
+  </ClientOnly>
 </template>
-
-<style scoped>
-
-</style>

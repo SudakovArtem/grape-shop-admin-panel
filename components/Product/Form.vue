@@ -1,149 +1,68 @@
-<script setup lang="ts">
-import * as z from 'zod'
-import type {BreadcrumbItem, FormSubmitEvent} from '@nuxt/ui'
+<script lang="ts" setup>
+import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Category, Product } from '@/types'
+import { type ProductSchema, productSchema } from '@configs/modules/validations/product'
+import MarkdownIt from 'markdown-it'
+import TurndownService from 'turndown'
 
-type Product = {
-  id: number
-  name: string
-  description: string
-  cuttingPrice: string
-  seedlingPrice: string
-  categoryId: number
-  variety: string
-  maturationPeriod: string
-  berryShape: string
-  color: string
-  taste: string
-  inStock: boolean
-  images: string[]
-}
+const { product = null, title = 'Новый продукт', isUpdate = false, loading = false } = defineProps<Product.FormProps>()
 
-type Props = {
-  title?: string
-  isUpdate?: boolean
-}
+const emit = defineEmits<Product.FormEmits>()
 
-const props = withDefaults(defineProps<Props>(), {
-  title: 'Новый продукт',
-  isUpdate: false
+const {
+  public: { baseApiUrl }
+} = useRuntimeConfig()
+
+const { data: categories } = useAsyncData<Category.Model[]>('categories', () => $fetch(`${baseApiUrl}/categories`), {
+  default: () => []
 })
 
-const schema = z.object({
-  name: z.string(),
-  description: z.string(),
-  cuttingPrice: z.string(),
-  seedlingPrice: z.string(),
-  categoryId: z.number(),
-  variety: z.string(),
-  maturationPeriod: z.string(),
-  berryShape: z.string(),
-  color: z.string(),
-  taste: z.string(),
-  inStock: z.boolean(),
-  images: z.array(z.instanceof(File)),
-})
-
-type Schema = z.output<typeof schema>
-const { user: userService } = useServices()
-
-const router = useRouter()
-const route = useRoute()
-const productName = ref<string>('')
-
-const crumb = computed<string>(() => route.params?.id ? unref(productName) : props.title)
-
-const breadcrumbs = computed<BreadcrumbItem[]>( () => [
-  {
-    icon: 'i-lucide-house',
-    to: '/'
-  },
-  {
-    label: 'Продукты',
-    icon: 'i-lucide-box',
-    to: '/products'
-  },
-  {
-    label: unref(crumb),
-    icon: 'i-lucide-link',
-    to: `/components/${(route.params?.id as string) ?? ''}`
-  }
-])
-
-const categories = ref([
-  {
-    label: 'Виноград',
-    value: 2
-  }
-])
-// Форма ягоды
-const berryShapes = ref<string[]>(['Овальная', 'Пальцевидная', 'Удлиненная', 'Яйцевидная', 'Круглая'])
-
-// Срок созревания
-const ripeningPeriods = ref<string[]>(['Ультраранний', 'Очень ранний', 'Ранний', 'Ранне-средний', 'Средний', 'Не указан'])
-
-// Цвет
-const colors = ref<string[]>(['Желтый', 'Красный', 'Розово-красный', 'Темно-красный', 'Темный', 'Белый', 'Бело-розовый', 'Желто-розовый', 'Розовый'])
-
-// Вкус
-const flavors = ref<string[]>(['Гармоничный', 'Мускатный', 'Легкий мускат', 'Фруктовый'])
-
-// Коллекция
-const collections = ref<string[]>([
-  'Основная коллекция',
-  'Селекция Голуба А.А.',
-  'Селекция Щеренкова В.А.',
-  'Селекция Щенникова О.Н.',
-  'Селекция Карпушева А.',
-  'Киш-мишные сорта',
-  'Селекция Калугина В.М.'
-])
-
-type Image = {
-  fileKey: string
-  url: string
-}
+const {
+  constants: { colors, flavors, berryShapes, ripeningPeriods, collections }
+} = useConfigs()
 
 const isSending = ref<boolean>(false)
+const isLoading = computed<boolean>(() => loading || unref(isSending))
+const isMounted = ref<boolean>(false)
 
-const state = reactive<Schema>({
+const state = reactive<ProductSchema>({
   name: '',
   description: '',
   cuttingPrice: '',
   seedlingPrice: '',
-  categoryId: categories.value[0].value,
+  categoryId: -1,
   variety: '',
   maturationPeriod: '',
   berryShape: '',
   color: '',
   taste: '',
-  inStock: false,
-  images: []
+  inStock: false
 })
+
+const productImages = ref<File[]>([])
 
 const toast = useToast()
 
-const {public: {baseApiUrl}} = useRuntimeConfig()
-
-const uploadFile = async (productId: string, file: File): Promise<string> => {
+const uploadFile = async (productId: number, file: File): Promise<string> => {
   const errorText = `При загрузке файла ${file?.name} произошла ошибка. `
   const formData = new FormData()
   formData.set('fieldName', 'file')
   formData.set('imageFile', file, file.name)
 
-  const tempFile = await $fetch(`${baseApiUrl}/products/${productId}/images`, {
+  const { imageUrl } = await $fetch<Product.UploadFile>(`${baseApiUrl}/products/${productId}/images`, {
     method: 'POST',
     headers: {
       authorization: `Bearer ${useCookie('token').value ?? ''}`
     },
     body: formData
   })
-  if (!tempFile) {
+  if (!imageUrl) {
     throw new Error(errorText)
   }
-  return tempFile
+  return imageUrl
 }
 
-const uploadPreviews = async (productId: string, data: File[]): Promise<string[] | false> => {
+const uploadPreviews = async (productId: number, data: File[]): Promise<string[] | false> => {
   const uploadPromises = data.map((file) => uploadFile(productId, file as File))
 
   try {
@@ -155,10 +74,11 @@ const uploadPreviews = async (productId: string, data: File[]): Promise<string[]
   }
 }
 
-const prepareData = (state: Schema) => {
-  return ({
+const prepareData = (state: ProductSchema) => {
+  const md = new MarkdownIt()
+  return {
     name: state.name,
-    description: state.description,
+    description: state.description ? md.render(state.description) : '',
     cuttingPrice: state.cuttingPrice,
     seedlingPrice: state.seedlingPrice,
     categoryId: state.categoryId,
@@ -167,56 +87,73 @@ const prepareData = (state: Schema) => {
     berryShape: state.berryShape,
     color: state.color,
     taste: state.taste,
-    inStock: state.inStock,
-  });
+    inStock: state.inStock
+  }
 }
 
-const createProduct = async (state: Schema) => {
+const createProduct = async (state: ProductSchema) => {
   const body = prepareData(state)
-  const product = await $fetch<Product>(`${baseApiUrl}/products`, {
+  const response = await $fetch<Product.Model>(`${baseApiUrl}/products`, {
     method: 'POST',
     headers: {
       authorization: `Bearer ${useCookie('token').value ?? ''}`
     },
     body
   })
-  const tempFiles = await uploadPreviews(product.id?.toString(), state.images as File[])
+
+  await uploadPreviews(response.id, unref(productImages))
 }
 
-const updateProduct = async (id: string, state: Schema) => {
-  const body = await prepareData(state)
-  const product = await $fetch<Product>(`${baseApiUrl}/products/${id}`, {
+const updateProduct = async (id: number, state: ProductSchema) => {
+  const body = prepareData(state)
+  const response = await $fetch<Product.Model>(`${baseApiUrl}/products/${id}`, {
     method: 'PUT',
     headers: {
       authorization: `Bearer ${useCookie('token').value ?? ''}`
     },
     body
   })
-  const tempFiles = await uploadPreviews(product.id?.toString(), state.images as File[])
+
+  await uploadPreviews(response.id, unref(productImages))
+  emit('refresh')
 }
 
-const fetchProduct = async (id: string) => {
-  const { data: product } = await useFetch<Product>(`${baseApiUrl}/products/${id}`, {
-    method: 'GET',
-    headers: {
-      authorization: `Bearer ${useCookie('token').value ?? ''}`
-    }
-  })
-
-  if (product.value !== null) {
-    productName.value = product.value.name
-    Object.keys(state).forEach((key) => {
-      if (key in product.value!) {
-        (state as any)[key] = (product.value as Product)[key as keyof Product]
+const updateProductData = (data: Product.Model | null) => {
+  if (data !== null) {
+    const turndown = new TurndownService()
+    const { description, ...rest } = state
+    console.log('rest', rest)
+    Object.keys(rest).forEach((key) => {
+      if (key in data!) {
+        ;(state as any)[key] = (data as Product.Model)[key as keyof Product.Model]
       }
     })
+    state.description = turndown.turndown(data.description)
+    productImages.value = []
   }
 }
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  const submitFunc = props.isUpdate ? () => updateProduct(route.params?.id as string, state) : () => createProduct(state)
+const deleteImage = async (productId: number, imageId: number) => {
+  isSending.value = true
+  try {
+    await $fetch<Product.UploadFile>(`${baseApiUrl}/products/${productId}/images/${imageId}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: `Bearer ${useCookie('token').value ?? ''}`
+      }
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isSending.value = false
+    emit('refresh')
+  }
+}
 
-    isSending.value = true
+async function onSubmit({ data }: FormSubmitEvent<ProductSchema>) {
+  const submitFunc = isUpdate ? () => updateProduct(product?.id ?? -1, data) : () => createProduct(state)
+
+  isSending.value = true
 
   try {
     await submitFunc()
@@ -229,76 +166,127 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   }
 }
 
-watch(() => route.params?.id, (value) => {
-  if (value === undefined) {
-    return
-  }
+watch(
+  [isMounted, () => product],
+  ([mounted, productValue]) => {
+    if (!mounted) {
+      return
+    }
+    updateProductData(productValue)
+  },
+  { immediate: true }
+)
 
-  fetchProduct(value as string)
-}, {immediate: true})
+onMounted(() => {
+  isMounted.value = true
+})
 </script>
 
 <template>
-  <UContainer>
-    <UBreadcrumb :items="breadcrumbs" />
-    <UCard class="w-full" variant="outline">
-      <template #header>
-        <h2 class="text-4xl" v-text="title" />
-      </template>
-
-      <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit" :disabled="isSending">
+  <UCard class="w-full" variant="outline">
+    <template #header>
+      <h2 class="text-4xl" v-text="title" />
+    </template>
+    <UForm :disabled="isLoading" :schema="productSchema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
+      <div class="grid grid-cols-2 gap-4">
         <UFormField label="Название" name="name">
-          <UInput size="xl" v-model="state.name" class="w-full" />
+          <UInput v-model="state.name" class="w-full" size="xl" />
         </UFormField>
 
-        <UFormField required label="Коллекция" name="variety">
-          <USelect size="xl" v-model="state.variety" class="w-full" :items="collections" />
+        <UFormField label="Коллекция" name="variety" required>
+          <USelect v-model="state.variety" :items="collections" class="w-full" size="xl" />
+        </UFormField>
+      </div>
+
+      <UFormField label="Описание" name="description">
+        <UTextarea v-model="state.description" autoresize class="w-full" size="xl" :maxrows="10" />
+      </UFormField>
+
+      <div class="grid grid-cols-2 gap-4">
+        <UFormField label="Категория" name="categoryId" required>
+          <USelect
+            v-model="state.categoryId"
+            :items="categories"
+            value-key="id"
+            label-key="name"
+            class="w-full"
+            :disabled="false"
+            size="xl"
+          />
         </UFormField>
 
-        <UFormField required label="Описание" name="description">
-          <UTextarea size="xl" v-model="state.description" class="w-full" autoresize />
+        <UFormField label="Форма ягоды" name="berryShapes" required>
+          <USelect v-model="state.berryShape" :items="berryShapes" class="w-full" size="xl" />
+        </UFormField>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <UFormField label="Срок созревания" name="maturationPeriod" required>
+          <USelect v-model="state.maturationPeriod" :items="ripeningPeriods" class="w-full" size="xl" />
         </UFormField>
 
-        <UFormField required label="Категория" name="categoryId">
-          <USelect size="xl" v-model="state.categoryId" class="w-full" :items="categories" disabled />
+        <UFormField label="Цвет" name="color" required>
+          <USelect v-model="state.color" :items="colors" class="w-full" size="xl" />
         </UFormField>
 
-        <UFormField required label="Форма ягоды" name="berryShapes">
-          <USelect size="xl" v-model="state.berryShape" class="w-full" :items="berryShapes" />
+        <UFormField label="Вкус" name="taste" required>
+          <USelect v-model="state.taste" :items="flavors" class="w-full" size="xl" />
+        </UFormField>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <UFormField label="Цена за черенок" name="cuttingPrice" required>
+          <UInput v-model="state.cuttingPrice" class="w-full" size="xl" />
         </UFormField>
 
-        <UFormField required label="Срок созревания" name="maturationPeriod">
-          <USelect size="xl" v-model="state.maturationPeriod" class="w-full" :items="ripeningPeriods" />
+        <UFormField label="Цена за саженец" name="seedlingPrice" required>
+          <UInput v-model="state.seedlingPrice" class="w-full" size="xl" />
         </UFormField>
+      </div>
 
-        <UFormField required label="Цвет" name="color">
-          <USelect size="xl" v-model="state.color" class="w-full" :items="colors" />
-        </UFormField>
+      <UFormField>
+        <USwitch v-model="state.inStock" label="В наличии" />
+      </UFormField>
 
-        <UFormField required label="Вкус" name="taste">
-          <USelect size="xl" v-model="state.taste" class="w-full" :items="flavors" />
-        </UFormField>
+      <div v-if="product?.images" class="text-sm">
+        <span class="block font-medium text-default">Загруженные изображения</span>
+        <div class="grid grid-cols-3 gap-4">
+          <UCard
+            v-for="image in product.images"
+            :key="image.id"
+            class="w-full mt-1"
+            variant="outline"
+            :ui="{ footer: ['text-right'] }"
+          >
+            <template #footer>
+              <UButton
+                icon="i-lucide-x"
+                size="md"
+                color="neutral"
+                variant="solid"
+                @click="deleteImage(product.id, image.id)"
+                :loading="isLoading"
+                >Удалить</UButton
+              >
+            </template>
+            <img :src="image.url" alt="" class="object-cover w-full aspect-square" data-not-lazy />
+          </UCard>
+        </div>
+      </div>
 
-        <UFormField required label="Цена за черенок" name="cuttingPrice">
-          <UInput size="xl" v-model="state.cuttingPrice" class="w-full" />
-        </UFormField>
-
-        <UFormField required label="Цена за саженец" name="seedlingPrice">
-          <UInput size="xl" v-model="state.seedlingPrice" class="w-full" />
-        </UFormField>
-
-        <UFormField>
-          <USwitch v-model="state.inStock" label="В наличии" />
-        </UFormField>
-
-        <UFormField label="Изображения" name="images">
-          <UiFile v-model="state.images" id="images" multiple name="images" :max-size="5" />
-        </UFormField>
-
-        <UButton type="submit" size="xl" :loading="isSending">
-          <span v-text="isUpdate ? 'Обновить' : 'Создать'"></span>
-        </UButton>
-      </UForm>
-    </UCard>
-  </UContainer>
+      <div class="text-sm">
+        <span class="block font-medium text-default">Добавить изображения</span>
+        <UiFile id="images" v-model="productImages" :max-size="5" multiple name="images" class="mt-1" />
+      </div>
+      <UButton :loading="isSending" size="xl" type="submit" color="neutral">
+        <span v-text="isUpdate ? 'Обновить' : 'Создать'"></span>
+      </UButton>
+    </UForm>
+    <template #footer> </template>
+  </UCard>
 </template>
+
+<style scoped>
+.card {
+  color: #0f172b;
+}
+</style>

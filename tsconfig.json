@@ -14,7 +14,6 @@
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
       "@/*": ["./*"],
       "@img/*": ["./assets/images/*"],
       "@icons/*": ["./assets/icons/*"],
@@ -23,7 +22,8 @@
       "@api/*": ["./core/api/*"],
       "@services/*": ["./core/services/*"],
       "#app": ["./node_modules/nuxt/dist/app"],
-      "#app/*": ["./node_modules/nuxt/dist/app/*"]
+      "#app/*": ["./node_modules/nuxt/dist/app/*"],
+      "#components": ["./.nuxt/components.d.ts"]
     },
     "types": ["@nuxt/types", "@types/node", "@pinia/nuxt"],
     "typeRoots": ["./types", "./node_modules/@types"]

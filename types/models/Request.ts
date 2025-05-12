@@ -10,12 +10,33 @@ export namespace Request {
 
   export type Params = Record<string, string | string[] | boolean | null | undefined>
 
+  export interface Body {
+    _token?: string
+    [key: string]: unknown
+  }
+
+  export interface Prepared {
+    url: string
+    options: {
+      method?: Request.Methods
+      params?: Record<string, unknown>
+      headers: Record<string, string>
+      body?: Request.Body | FormData
+      signal?: AbortSignal
+      processData?: boolean
+      contentType?: boolean | string
+    }
+  }
+
+  export type Options = { config: Request.Config; body?: Request.Body | FormData }
+
   export interface Config<T = unknown> {
     url: string
-    method: Methods
+    method: Request.Methods
     headers?: Record<string, string>
     customServer?: string
-    params?: Params
+    params?: Request.Params
     body?: Record<string, T>
+    noSignal?: boolean
   }
 }

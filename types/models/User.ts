@@ -93,18 +93,13 @@ export namespace User {
 
   export interface Model {
     id: number
-    fullName: string
     email: string
-    ogrn: string
-    userType: User.Types
-    phone: string
-    role: 'user' | 'admin'
-    direction?: number | User.DirectionServerResponse | null
-    status?: number | User.StatusServerResponse | null
-    socialMedia: SocialMedia
-    updatedAt?: string | null
-    createdAt?: string | null
-    deletedAt?: string | null
+    name: string
+    address: string | null
+    phone: string | null
+    avatar: string | null
+    role: 'admin' | 'user'
+    createdAt: string
   }
 
   export interface Session {

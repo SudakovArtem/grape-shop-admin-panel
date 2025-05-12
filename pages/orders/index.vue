@@ -1,5 +1,6 @@
 <script lang="ts" setup xmlns="http://www.w3.org/1999/html">
 import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { Response } from '@/types'
 
 const UBadge = resolveComponent('UBadge')
 
@@ -35,43 +36,43 @@ type Order = {
     price: string
   }[]
 }
-const {public: {baseApiUrl}} = useRuntimeConfig()
+const {
+  public: { baseApiUrl }
+} = useRuntimeConfig()
 
 const router = useRouter()
 
-// const statusColors = {
-//   "error" | "primary" | "secondary" | "success" | "info" | "warning" | "neutral"
-// }
-
 const statusColors = {
-  'Создан': 'neutral',
+  Создан: 'neutral',
   'В обработке': 'info',
-  'Отправлен': 'secondary',
-  'Доставлен': 'success',
-  'Отменен': 'error'
+  Отправлен: 'secondary',
+  Доставлен: 'success',
+  Отменен: 'error'
 } as const
 
-const {pageNumber, pageSize, isMaxItems, list, loadList, totalCount, increasePageNumber, setPageNumber} = usePagination<Order>()
+const { pageNumber, pageSize, list, loadList, totalCount } = usePagination<Order>()
 
-const {data: orders} = useAsyncData(() =>
-        $fetch(`${baseApiUrl}/orders/all`, {
-          method: 'GET',
-          headers: {
-              authorization: `Bearer ${useCookie('token').value ?? ''}`
-          },
-          params: {
-            limit: unref(pageSize),
-            page: unref(pageNumber),
-            sortBy: '-createdAt'
-          }
-        }),
-    {
-      default: () => ({
-        data: [],
-        meta: {}
-      }),
-      watch: [pageNumber]
-    })
+const { data: orders } = useAsyncData(
+  () =>
+    $fetch(`${baseApiUrl}/orders/all`, {
+      method: 'GET',
+      headers: {
+        authorization: `Bearer ${useCookie('token').value ?? ''}`
+      },
+      params: {
+        limit: unref(pageSize),
+        page: unref(pageNumber),
+        sortBy: '-createdAt'
+      }
+    }),
+  {
+    default: () => ({
+      data: [],
+      meta: {}
+    }),
+    watch: [pageNumber]
+  }
+)
 
 const columns: TableColumn<Order>[] = [
   {
@@ -88,17 +89,17 @@ const columns: TableColumn<Order>[] = [
     cell: ({ row }) => {
       const color = statusColors[row.getValue('status') as keyof typeof statusColors]
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-          row.getValue('status')
-      )
+      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => row.getValue('status'))
     }
   },
   {
     accessorKey: 'items',
     header: 'Товары',
     cell: ({ row }) => {
-      return h(UBadge, { class: 'capitalize', variant: 'outline', color: 'neutral' }, () =>
-          (row.getValue('items') as Array<unknown>).length
+      return h(
+        UBadge,
+        { class: 'capitalize', variant: 'outline', color: 'neutral' },
+        () => (row.getValue('items') as Array<unknown>).length
       )
     }
   },
@@ -137,29 +138,27 @@ function onSelect(row: TableRow<Order>, e?: Event) {
 }
 
 watch(
-    orders,
-    (value) => {
-      if (!value) {
-        return
-      }
+  orders,
+  (value) => {
+    if (!value) {
+      return
+    }
 
-      loadList(value?.data ?? [], value.meta.total ?? 0)
-    },
-    {immediate: true}
+    loadList(value?.data ?? [], (value.meta as Response.Pagination).total ?? 0)
+  },
+  { immediate: true }
 )
 </script>
 
 <template>
-  <UContainer>
-    <div class="w-full space-y-4 pb-4 pt-4">
-      <UTable :data="list" class="flex-1" :columns="columns" @select="onSelect" />
-    </div>
-    <div class="flex justify-center border-t border-default pt-4">
-      <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
-    </div>
-  </UContainer>
+  <ClientOnly>
+    <UContainer class="pt-6 pb-6">
+      <div class="w-full space-y-4 pb-4 pt-4">
+        <UTable :data="list" class="flex-1" :columns="columns" @select="onSelect" />
+      </div>
+      <div class="flex justify-center border-t border-default pt-4">
+        <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
+      </div>
+    </UContainer>
+  </ClientOnly>
 </template>
-
-<style scoped>
-
-</style>

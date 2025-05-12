@@ -1,0 +1,7 @@
+import type { Product, Request, Response } from '@/types'
+
+export interface ProductService {
+  getProductById(id: string): Promise<Product.Model>
+  deleteProduct(id: string): Promise<unknown>
+  getProducts(settings: Request.Params): Promise<Response.WithMeta<Product.Model[]>>
+}

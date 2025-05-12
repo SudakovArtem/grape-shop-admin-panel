@@ -1,6 +1,6 @@
-import type {nuxtContext} from '@nuxt/types'
-import {Request, type User, type UserApi} from '@/types'
-import getParams from "@/utils/getParams.ts";
+import type { nuxtContext } from '@nuxt/types'
+import type { Request, Response, User, UserApi } from '@/types'
+import getParams from '@/core/utils/getParams'
 
 export default (context: nuxtContext) => {
   class UserMethods implements UserApi {
@@ -9,11 +9,11 @@ export default (context: nuxtContext) => {
     async login(body: User.LoginDto): Promise<User.Session> {
       const config = UserMethods.USER_ENDPOINTS.login()
 
-      const result = await context.$services.useAPI.request({ config, body })
+      const result = await context.$services.useAPI.request<User.Session>({ config, body })
       return result
     }
 
-    async getUsers(settings: Request.Params) {
+    async getUsers(settings: Request.Params): Promise<Response.WithMeta<User.Model[]>> {
       const paramNames: Record<string, string | string[]> = {
         pageNumber: 'page',
         pageSize: 'limit',
@@ -23,17 +23,17 @@ export default (context: nuxtContext) => {
       const params: Request.Params = getParams(settings, paramNames)
 
       const config = UserMethods.USER_ENDPOINTS.getUsers(params)
-      const result = await context.$services.useAPI.request({ config })
+      const result = await context.$services.useAPI.request<Response.WithMeta<User.Model[]>>({ config })
       return result
     }
 
-    async getProfile() {
+    async getProfile(): Promise<User.Model> {
       const config = UserMethods.USER_ENDPOINTS.getProfile()
-      const result = await context.$services.useAPI.request({ config })
+      const result = await context.$services.useAPI.request<User.Model>({ config })
       return result
     }
 
-    async deleteUser(id: string) {
+    async deleteUser(id: string): Promise<unknown> {
       const config = UserMethods.USER_ENDPOINTS.deleteUser(id)
       const result = await context.$services.useAPI.request({ config })
       return result

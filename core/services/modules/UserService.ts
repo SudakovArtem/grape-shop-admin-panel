@@ -1,26 +1,26 @@
-import type {nuxtContext} from '@nuxt/types'
-import {Request, User, type UserService as IUserService} from '@/types'
+import type { nuxtContext } from '@nuxt/types'
+import type { Request, Response, User, UserService as IUserService } from '@/types'
 import useUserStore from '@/store/user'
 import useAuthStore from '@/store/auth'
 
 export default (context: nuxtContext) => {
-  const authStore = useAuthStore()
-  const userStore = useUserStore()
+  const { setAuth } = useAuthStore()
+  const { setUser } = useUserStore()
 
   class UserService implements IUserService {
     private static readonly USER_ADAPTERS = context.$adapters.user
 
     private static readonly USER_METHODS = context.$api.user
 
-    private static readonly USER_ENDPOINTS = context.$configs.endpoints.user
+    private static readonly API_SERVICE = context.$services.useAPI
 
     async getProfile(): Promise<User.Model> {
       const response: User.Model = await UserService.USER_METHODS.getProfile()
       return response
     }
 
-    async getUsers(settings: Request.Params): Promise<User.Model> {
-      const response: User.Model = await UserService.USER_METHODS.getUsers(settings)
+    async getUsers(settings: Request.Params): Promise<Response.WithMeta<User.Model[]>> {
+      const response = await UserService.USER_METHODS.getUsers(settings)
       return response
     }
 
@@ -32,6 +32,7 @@ export default (context: nuxtContext) => {
           maxAge: 3600 * 24 * 30,
           secure: false
         })
+        UserService.API_SERVICE.setAuthorizationToken(accessToken)
         token.value = accessToken
       }
 
@@ -39,8 +40,8 @@ export default (context: nuxtContext) => {
         setTimeout(async () => {
           const user = (await this.getProfile()) ?? false
 
-          userStore.setUser(user)
-          authStore.setAuth(true)
+          setUser(user)
+          setAuth(true)
           resolve(user)
         }, 0)
       })
@@ -49,8 +50,33 @@ export default (context: nuxtContext) => {
     }
 
     deleteUser(id: string): Promise<unknown> {
-      const response: unknown = UserService.USER_METHODS.deleteUser(id)
+      const response = UserService.USER_METHODS.deleteUser(id)
       return response
+    }
+
+    logout(): void {
+      useCookie('token').value = null
+      setAuth(false)
+      UserService.API_SERVICE.setAuthorizationToken('')
+    }
+
+    async checkAuth(): Promise<void> {
+      const token = useCookie('token')
+
+      if (token.value) {
+        UserService.API_SERVICE.setAuthorizationToken(token.value)
+        const user = await this.getProfile()
+
+        if (!user?.id) {
+          this.logout()
+          return
+        }
+
+        setUser(user)
+        setAuth(true)
+      } else {
+        this.logout()
+      }
     }
   }
 

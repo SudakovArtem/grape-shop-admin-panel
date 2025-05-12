@@ -1,48 +1,26 @@
+import AxiosService from '@services/modules/apiServices/UseFetchService'
 import type { nuxtContext } from '@nuxt/types'
-import useAuthStore from '@/store/auth'
-import type { ApiClientService } from '@/types'
-import FetchService from '@services/modules/apiServices/FetchService'
+import type { ApiClientService, Request } from '@/types'
 
-export default (context: nuxtContext) => {
-  const authStore = useAuthStore()
+class APIClient {
+  client: ApiClientService
 
-  class APIClientService implements ApiClientService {
-    client: any
+  context: nuxtContext
 
-    context: nuxtContext
-
-    constructor(client: any, context: nuxtContext) {
-      this.client = client
-      this.context = context
-    }
-
-    async request(data = {}) {
-      return this.client.request(data)
-    }
+  constructor(client: ApiClientService, context: nuxtContext) {
+    this.client = client
+    this.context = context
   }
 
-  const baseApiUrl: string = useRuntimeConfig().public.baseApiUrl ?? '/api'
-  context.$services.useAPI = new APIClientService(
-    new FetchService(context, {
-      baseApiUrl,
-      async onRequestCallback(config) {
-        if (!(config.options?.body instanceof FormData)) {
-          config.options.headers['Content-Type'] = 'application/vnd.api+json'
-          config.options.headers.accept = 'application/vnd.api+json'
-        }
-      },
-      onRequestErrorCallback: async (config) => {
-        console.log('FATAL', config)
-      },
-      onResponseErrorCallback: async (config) => {
-        if (config?.response?.status === 401) {
-          useCookie('token', {
-            maxAge: -1
-          }).value = ''
-          authStore.setAuth(false)
-        }
-      }
-    }),
-    context
-  )
+  async request<T>(data: Request.Options): Promise<T> {
+    return this.client.request<T>(data)
+  }
+
+  setAuthorizationToken(token = ''): void {
+    this.client.setAuthorizationToken(token)
+  }
+}
+
+export default (context: nuxtContext) => {
+  context.$services.useAPI = new APIClient(AxiosService(context), context)
 }

@@ -8,6 +8,9 @@ export * from './models/Adapters'
 export * from './models/Auth'
 export * from './models/User'
 export * from './models/Request'
+export * from './models/Response'
+export * from './models/Product'
+export * from './models/Category'
 
 export type coreFunctionList = ((context: nuxtContext) => void)[]
 
@@ -16,4 +19,5 @@ export type PaginationSettings<T = unknown> = {
   pageSize?: number
   total?: number
   list?: T[]
+  replace?: boolean
 }
