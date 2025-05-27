@@ -8,12 +8,12 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   },
   {
     label: 'Продукты',
-    icon: 'i-lucide-box',
+    icon: 'i-lucide-grape',
     to: '/products'
   },
   {
     label: 'Новый продукт',
-    icon: 'i-lucide-link',
+    icon: 'i-lucide-file-plus-2',
     to: `/products/new`
   }
 ])

@@ -1,9 +1,21 @@
 <script lang="ts" setup xmlns="http://www.w3.org/1999/html">
-import type { TableColumn, DropdownMenuItem } from '@nuxt/ui'
+import type { TableColumn, DropdownMenuItem, BreadcrumbItem } from '@nuxt/ui'
 import { debounce } from 'lodash'
 import type { Response, User } from '@/types'
 
 const UBadge = resolveComponent('UBadge')
+
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  {
+    icon: 'i-lucide-house',
+    to: '/'
+  },
+  {
+    label: 'Пользователи',
+    icon: 'i-lucide-users',
+    to: '/users'
+  }
+])
 
 const router = useRouter()
 const { user: userService } = useServices()
@@ -16,7 +28,7 @@ const {
   data: users,
   status: usersStatus,
   refresh
-} = useAsyncData(
+} = await useLazyAsyncData(
   () =>
     userService.getUsers({
       limit: unref(pageSize).toString(),
@@ -128,7 +140,7 @@ watch(
       return
     }
 
-    loadList(value?.data ?? [], (value.meta as Response.Pagination).total ?? 0)
+    loadList(value?.data ?? [], (value.meta as Response.Pagination)?.total ?? 0)
   },
   { immediate: true }
 )
@@ -144,6 +156,7 @@ watch(search, onSearch)
 <template>
   <ClientOnly>
     <UContainer class="pt-6 pb-6">
+      <UBreadcrumb :items="breadcrumbs" />
       <div class="flex px-4 py-3.5 border-b border-accented justify-between gap-4">
         <UInput v-model="search" class="max-w-sm" placeholder="Поиск по email..." />
         <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" />

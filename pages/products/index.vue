@@ -11,7 +11,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   },
   {
     label: 'Продукты',
-    icon: 'i-lucide-box',
+    icon: 'i-lucide-grape',
     to: '/products'
   }
 ])
@@ -44,7 +44,7 @@ const {
   data: products,
   status: productsStatus,
   refresh
-} = useAsyncData(
+} = await useLazyAsyncData(
   () =>
     productService.getProducts({
       pageSize: unref(pageSize).toString(),

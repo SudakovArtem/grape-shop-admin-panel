@@ -99,8 +99,8 @@ export default ({ $config, $services }: nuxtContext): ApiClientService => {
     }
 
     private handleError(error: unknown): void {
-      if (error && typeof error === 'object' && 'status' in error) {
-        if ((error as { status: number }).status === 401) {
+      if (error && typeof error === 'object' && 'statusCode' in error) {
+        if ((error as { statusCode: number }).statusCode === 401) {
           this.clearUserData()
         } else if (
           error instanceof Error &&

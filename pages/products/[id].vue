@@ -8,7 +8,7 @@ const {
   public: { baseApiUrl }
 } = useRuntimeConfig()
 
-const { data: product, refresh } = await useAsyncData<Product.Model>(() => {
+const { data: product, refresh } = await await useLazyAsyncData<Product.Model>(() => {
   return $fetch(`${baseApiUrl}/products/${id}`, {
     method: 'GET',
     headers: {
@@ -25,7 +25,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
     },
     {
       label: 'Продукты',
-      icon: 'i-lucide-box',
+      icon: 'i-lucide-grape',
       to: '/products'
     }
   ]
@@ -36,7 +36,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => {
       ...breadcrumbsArray,
       {
         label: name,
-        icon: 'i-lucide-link',
+        icon: 'i-lucide-square-pen',
         to: `/products/${id}`
       }
     ]

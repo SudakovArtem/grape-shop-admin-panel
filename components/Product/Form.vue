@@ -13,9 +13,13 @@ const {
   public: { baseApiUrl }
 } = useRuntimeConfig()
 
-const { data: categories } = useAsyncData<Category.Model[]>('categories', () => $fetch(`${baseApiUrl}/categories`), {
-  default: () => []
-})
+const { data: categories } = await useLazyAsyncData<Category.Model[]>(
+  'categories',
+  () => $fetch(`${baseApiUrl}/categories`),
+  {
+    default: () => []
+  }
+)
 
 const {
   constants: { colors, flavors, berryShapes, ripeningPeriods, collections }

@@ -5,7 +5,7 @@ const {
   public: { baseApiUrl }
 } = useRuntimeConfig()
 
-const { data: order } = useAsyncData(
+const { data: order } = await useLazyAsyncData(
   () =>
     $fetch(`${baseApiUrl}/orders/${id}`, {
       method: 'GET',

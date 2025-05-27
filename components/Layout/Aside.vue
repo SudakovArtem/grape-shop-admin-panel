@@ -10,17 +10,17 @@ const items = ref<NavigationMenuItem[][]>([
     },
     {
       label: 'Пользователи',
-      icon: 'i-lucide-book-open',
+      icon: 'i-lucide-users',
       to: '/users'
     },
     {
       label: 'Продукты',
-      icon: 'i-lucide-database',
+      icon: 'i-lucide-grape',
       to: '/products'
     },
     {
       label: 'Заказы',
-      icon: 'i-lucide-box',
+      icon: 'i-lucide-logs',
       to: '/orders'
     }
   ],
@@ -28,8 +28,8 @@ const items = ref<NavigationMenuItem[][]>([
     {
       label: 'GitHub',
       icon: 'i-simple-icons-github',
-      badge: '3.8k',
-      to: 'https://github.com/nuxt/ui',
+      badge: 'SudakovArtem',
+      to: 'https://github.com/SudakovArtem/grape-shop-admin-panel',
       target: '_blank'
     },
     {

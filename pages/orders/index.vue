@@ -1,26 +1,9 @@
 <script lang="ts" setup xmlns="http://www.w3.org/1999/html">
-import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { BreadcrumbItem, TableColumn, TableRow } from '@nuxt/ui'
 import type { Response } from '@/types'
 
 const UBadge = resolveComponent('UBadge')
 
-// {
-//   "id": 2,
-//     "userId": 4,
-//     "totalPrice": "31.98",
-//     "status": "Создан",
-//     "createdAt": "2025-05-10T12:59:38.154Z",
-//     "items": [
-//   {
-//     "id": 2,
-//     "orderId": 2,
-//     "productId": 3,
-//     "type": "cutting",
-//     "quantity": 2,
-//     "price": "15.99"
-//   }
-// ]
-// }
 type Order = {
   id: number
   userId: number
@@ -42,6 +25,18 @@ const {
 
 const router = useRouter()
 
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
+  {
+    icon: 'i-lucide-house',
+    to: '/'
+  },
+  {
+    label: 'Заказы',
+    icon: 'i-lucide-logs',
+    to: '/orders'
+  }
+])
+
 const statusColors = {
   Создан: 'neutral',
   'В обработке': 'info',
@@ -52,7 +47,7 @@ const statusColors = {
 
 const { pageNumber, pageSize, list, loadList, totalCount } = usePagination<Order>()
 
-const { data: orders } = useAsyncData(
+const { data: orders } = await useLazyAsyncData(
   () =>
     $fetch(`${baseApiUrl}/orders/all`, {
       method: 'GET',
@@ -153,6 +148,7 @@ watch(
 <template>
   <ClientOnly>
     <UContainer class="pt-6 pb-6">
+      <UBreadcrumb :items="breadcrumbs" />
       <div class="w-full space-y-4 pb-4 pt-4">
         <UTable :data="list" class="flex-1" :columns="columns" @select="onSelect" />
       </div>
