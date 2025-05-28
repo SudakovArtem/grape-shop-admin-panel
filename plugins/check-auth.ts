@@ -6,5 +6,9 @@ export default defineNuxtPlugin(async (context: nuxtContext) => {
     $services: { user: userService }
   } = context
 
-  await userService.checkAuth()
+  try {
+    await userService.checkAuth()
+  } catch (error) {
+    console.error('Auth check failed:', error)
+  }
 })
