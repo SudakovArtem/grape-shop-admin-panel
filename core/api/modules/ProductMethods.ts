@@ -4,7 +4,7 @@ import getParams from '@/core/utils/getParams'
 
 export default (context: nuxtContext) => {
   class ProductMethods implements ProductApi {
-    private static readonly PRODUCT_ENDPOINTS = context.$configs.endpoints.product
+    private static PRODUCT_ENDPOINTS = context.$configs.endpoints.product
 
     async getProductById(id: string): Promise<Product.Model> {
       const config = ProductMethods.PRODUCT_ENDPOINTS.getProductById(id)
@@ -17,8 +17,13 @@ export default (context: nuxtContext) => {
         pageNumber: 'page',
         pageSize: 'limit',
         categoryId: 'categoryId',
-        maxPrice: 'maxPrice',
         minPrice: 'minPrice',
+        maxPrice: 'maxPrice',
+        variety: 'variety',
+        maturationPeriod: 'maturationPeriod',
+        berryShape: 'berryShape',
+        color: 'color',
+        taste: 'taste',
         search: 'search',
         sortBy: 'sortBy'
       }

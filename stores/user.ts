@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { User } from '@/types'
+import type { User } from '@/types'
 
 export default defineStore('user', () => {
   const userData = ref<User.Model | null>(null)

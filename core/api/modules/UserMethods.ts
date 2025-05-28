@@ -4,12 +4,17 @@ import getParams from '@/core/utils/getParams'
 
 export default (context: nuxtContext) => {
   class UserMethods implements UserApi {
-    private static readonly USER_ENDPOINTS = context.$configs.endpoints.user
+    private static USER_ENDPOINTS = context.$configs.endpoints.user
 
     async login(body: User.LoginDto): Promise<User.Session> {
       const config = UserMethods.USER_ENDPOINTS.login()
+      const result = await context.$services.useAPI.request<User.Session, User.LoginDto>({ config, body })
+      return result
+    }
 
-      const result = await context.$services.useAPI.request<User.Session>({ config, body })
+    async register(body: User.RegisterDto): Promise<User.Model> {
+      const config = UserMethods.USER_ENDPOINTS.register()
+      const result = await context.$services.useAPI.request<User.Model, User.RegisterDto>({ config, body })
       return result
     }
 
@@ -27,15 +32,51 @@ export default (context: nuxtContext) => {
       return result
     }
 
+    async getUserById(id: string): Promise<User.Model> {
+      const config = UserMethods.USER_ENDPOINTS.getUserById(id)
+      const result = await context.$services.useAPI.request<User.Model>({ config })
+      return result
+    }
+
     async getProfile(): Promise<User.Model> {
       const config = UserMethods.USER_ENDPOINTS.getProfile()
       const result = await context.$services.useAPI.request<User.Model>({ config })
       return result
     }
 
+    async updateProfile(body: User.UpdateProfileDto): Promise<User.Model> {
+      const config = UserMethods.USER_ENDPOINTS.updateProfile()
+      const result = await context.$services.useAPI.request<User.Model, User.UpdateProfileDto>({ config, body })
+      return result
+    }
+
+    async updateUser(id: string, body: User.UpdateProfileDto): Promise<User.Model> {
+      const config = UserMethods.USER_ENDPOINTS.updateUser(id)
+      const result = await context.$services.useAPI.request<User.Model, User.UpdateProfileDto>({ config, body })
+      return result
+    }
+
     async deleteUser(id: string): Promise<unknown> {
       const config = UserMethods.USER_ENDPOINTS.deleteUser(id)
       const result = await context.$services.useAPI.request({ config })
+      return result
+    }
+
+    async forgotPassword(body: User.ForgotPasswordDto): Promise<{ message: string }> {
+      const config = UserMethods.USER_ENDPOINTS.forgotPassword()
+      const result = await context.$services.useAPI.request<{ message: string }, User.ForgotPasswordDto>({
+        config,
+        body
+      })
+      return result
+    }
+
+    async resetPassword(body: User.ResetPasswordDto): Promise<{ message: string }> {
+      const config = UserMethods.USER_ENDPOINTS.resetPassword()
+      const result = await context.$services.useAPI.request<{ message: string }, User.ResetPasswordDto>({
+        config,
+        body
+      })
       return result
     }
   }

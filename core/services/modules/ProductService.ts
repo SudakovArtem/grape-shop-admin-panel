@@ -3,7 +3,7 @@ import type { nuxtContext } from '@nuxt/types'
 
 export default (context: nuxtContext) => {
   class ProductService implements IProductService {
-    private static readonly PRODUCT_METHODS = context.$api.product
+    private static PRODUCT_METHODS = context.$api.product
 
     async getProducts(settings: Request.Params): Promise<Response.WithMeta<Product.Model[]>> {
       const response = await ProductService.PRODUCT_METHODS.getProducts(settings)

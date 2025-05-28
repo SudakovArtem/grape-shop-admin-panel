@@ -3,6 +3,8 @@ import type { User } from '@/types'
 export namespace Auth {
   export interface Model {
     isAuth: boolean
+    modalMode: 'login' | 'register'
+    isModalOpen: boolean
   }
 
   export interface ModalProps {

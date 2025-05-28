@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import useAuthStore from '@/store/auth'
+import useAuthStore from '@/stores/auth'
 
 const { isAuth } = storeToRefs(useAuthStore())
 const router = useRouter()

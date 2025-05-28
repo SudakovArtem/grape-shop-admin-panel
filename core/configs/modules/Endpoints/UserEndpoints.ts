@@ -6,30 +6,44 @@ export default {
     method: Request.Methods.GET,
     params
   }),
-  getUserById: (id: string, params: Request.Params): Request.Config => ({
-    url: `/api/users/${id}`,
-    method: Request.Methods.GET,
-    params
+  getUserById: (id: string): Request.Config => ({
+    url: `/users/${id}`,
+    method: Request.Methods.GET
   }),
   login: (): Request.Config => ({
-    url: '/users/admin/login',
+    url: '/users/login',
+    method: Request.Methods.POST
+  }),
+  register: (): Request.Config => ({
+    url: '/users/register',
     method: Request.Methods.POST
   }),
   getProfile: (): Request.Config => ({
     url: '/users/profile',
     method: Request.Methods.GET
   }),
-  createUser: (): Request.Config => ({
-    url: '/users/register',
-    method: Request.Methods.POST
+  updateProfile: (): Request.Config => ({
+    url: '/users/profile',
+    method: Request.Methods.PUT
   }),
-  updateUser: (id: string, body: User.UpdateDto): Request.Config => ({
+  updateUser: (id: string): Request.Config => ({
     url: `/users/${id}`,
-    method: Request.Methods.PUT,
-    body
+    method: Request.Methods.PUT
   }),
   deleteUser: (id: string): Request.Config => ({
     url: `/users/${id}`,
     method: Request.Methods.DELETE
+  }),
+  forgotPassword: (): Request.Config => ({
+    url: '/users/forgot-password',
+    method: Request.Methods.POST
+  }),
+  resetPassword: (): Request.Config => ({
+    url: '/users/reset-password',
+    method: Request.Methods.POST
+  }),
+  adminLogin: (): Request.Config => ({
+    url: '/users/admin/login',
+    method: Request.Methods.POST
   })
 }

@@ -1,7 +1,7 @@
 import type { nuxtContext } from '@nuxt/types'
 import type { Request, Response, User, UserService as IUserService } from '@/types'
-import useUserStore from '@/store/user'
-import useAuthStore from '@/store/auth'
+import useUserStore from '@/stores/user'
+import useAuthStore from '@/stores/auth'
 
 export default (context: nuxtContext) => {
   const { setAuth } = useAuthStore()
@@ -9,17 +9,38 @@ export default (context: nuxtContext) => {
   const { AUTHORIZATION_TOKEN_NAME } = context.$configs.constants
 
   class UserService implements IUserService {
-    private static readonly USER_METHODS = context.$api.user
+    private static USER_METHODS = context.$api.user
 
-    private static readonly API_SERVICE = context.$services.useAPI
+    private static API_SERVICE = context.$services.useAPI
 
     async getProfile(): Promise<User.Model> {
       const response: User.Model = await UserService.USER_METHODS.getProfile()
       return response
     }
 
+    async updateProfile(body: User.UpdateProfileDto): Promise<User.Model> {
+      const response = await UserService.USER_METHODS.updateProfile(body)
+      setUser(response)
+      return response
+    }
+
     async getUsers(settings: Request.Params): Promise<Response.WithMeta<User.Model[]>> {
       const response = await UserService.USER_METHODS.getUsers(settings)
+      return response
+    }
+
+    async getUserById(id: string): Promise<User.Model> {
+      const response = await UserService.USER_METHODS.getUserById(id)
+      return response
+    }
+
+    async updateUser(id: string, body: User.UpdateProfileDto): Promise<User.Model> {
+      const response = await UserService.USER_METHODS.updateUser(id, body)
+      return response
+    }
+
+    async register(body: User.RegisterDto): Promise<User.Model> {
+      const response = await UserService.USER_METHODS.register(body)
       return response
     }
 
@@ -48,14 +69,26 @@ export default (context: nuxtContext) => {
       return result
     }
 
+    async forgotPassword(body: User.ForgotPasswordDto): Promise<{ message: string }> {
+      const response = await UserService.USER_METHODS.forgotPassword(body)
+      return response
+    }
+
+    async resetPassword(body: User.ResetPasswordDto): Promise<{ message: string }> {
+      const response = await UserService.USER_METHODS.resetPassword(body)
+      return response
+    }
+
     deleteUser(id: string): Promise<unknown> {
       const response = UserService.USER_METHODS.deleteUser(id)
       return response
     }
 
     logout(): void {
-      useCookie(AUTHORIZATION_TOKEN_NAME).value = null
+      const token = useCookie(AUTHORIZATION_TOKEN_NAME)
+      token.value = null
       setAuth(false)
+      setUser(null)
       UserService.API_SERVICE.setAuthorizationToken('')
     }
 

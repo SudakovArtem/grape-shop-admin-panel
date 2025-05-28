@@ -1,18 +1,26 @@
 export namespace Product {
-  export type Model = {
+  export interface Model {
     id: number
     name: string
-    description: string
-    cuttingPrice: string
-    seedlingPrice: string
-    categoryId: number
-    variety: string
-    maturationPeriod: string
-    berryShape: string
-    color: string
-    taste: string
-    inStock: boolean
-    images: { id: number; url: string }[]
+    description?: string
+    cuttingPrice?: number
+    seedlingPrice?: number
+    categoryId?: number
+    categoryName?: string
+    variety?: string
+    maturationPeriod?: string
+    berryShape?: string
+    color?: string
+    taste?: string
+    inStock?: boolean
+    createdAt: string
+    updatedAt: string
+    images?: Product.Image[]
+  }
+
+  export type Image = {
+    id: number
+    url: string
   }
 
   export type UploadFile = {
@@ -33,5 +41,33 @@ export namespace Product {
 
   export type FormEmits = {
     (e: 'refresh'): void
+  }
+
+  export interface CreateDto {
+    name: string
+    description?: string
+    cuttingPrice?: number
+    seedlingPrice?: number
+    categoryId?: number
+    variety?: string
+    maturationPeriod?: string
+    berryShape?: string
+    color?: string
+    taste?: string
+    inStock?: boolean
+  }
+
+  export interface UpdateDto {
+    name?: string
+    description?: string
+    cuttingPrice?: number
+    seedlingPrice?: number
+    categoryId?: number
+    variety?: string
+    maturationPeriod?: string
+    berryShape?: string
+    color?: string
+    taste?: string
+    inStock?: boolean
   }
 }

@@ -7,7 +7,7 @@ export default {
     params
   }),
   getProductById: (id: string): Request.Config => ({
-    url: `/api/products/${id}`,
+    url: `/products/${id}`,
     method: Request.Methods.GET
   }),
   createProduct: (): Request.Config => ({

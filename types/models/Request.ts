@@ -28,7 +28,10 @@ export namespace Request {
     }
   }
 
-  export type Options = { config: Request.Config; body?: Request.Body | FormData }
+  export interface Options<T = unknown> {
+    config: Request.Config
+    body?: T | Request.Body | FormData
+  }
 
   export interface Config<T = unknown> {
     url: string
