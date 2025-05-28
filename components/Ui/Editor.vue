@@ -189,8 +189,8 @@
         >
         </UButton
       ></UTooltip>
-      <UTooltip text="Добавить изображение"
-        ><UButton :color="'neutral'" icon="i-ri-image-add-line" variant="outline" @click="addImage">
+      <UTooltip v-if="hasImage" text="Добавить изображение"
+        ><UButton :color="'neutral'" icon="i-ri-image-add-line" variant="outline" @click="modal.open()">
           Добавить
         </UButton></UTooltip
       >
@@ -380,17 +380,20 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
 import { Editor, EditorContent } from '@tiptap/vue-3'
+import { LazyModalUploadImage } from '#components'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 interface Props {
   modelValue: string
   placeholder?: string
   disabled?: boolean
+  hasImage?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Введите описание...',
-  disabled: false
+  disabled: false,
+  hasImage: false
 })
 
 const emit = defineEmits<{
@@ -398,6 +401,17 @@ const emit = defineEmits<{
 }>()
 
 const editor = ref<Editor>()
+
+const overlay = useOverlay()
+
+const modal = overlay.create(LazyModalUploadImage, {
+  props: {
+    folder: 'products',
+    onAdd: (url: string) => {
+      editor.value?.chain().focus().setImage({ src: url }).run()
+    }
+  }
+})
 
 const textTypeIcon = computed<string>(() => {
   const { level } = editor.value?.getAttributes('heading') ?? { level: 0 }

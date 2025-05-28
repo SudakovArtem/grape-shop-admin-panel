@@ -21,7 +21,7 @@ const props = withDefaults(
     modelValue: () => [],
     id: '',
     name: '',
-    accept: '.jpg, .png, .pdf',
+    accept: '.jpg, .jpeg, .png, .webp',
     maxSize: 1,
     multiple: false
   }
@@ -88,10 +88,10 @@ const handleFileChange = (event: Event | DragEvent) => {
 
   if (!uploadFiles) return
 
-  if (!props.multiple) {
-    files.value = []
-    chosenFiles.length = 0
-  }
+  // if (!props.multiple) {
+  //   files.value = []
+  //   chosenFiles.length = 0
+  // }
 
   errors.value = []
 
