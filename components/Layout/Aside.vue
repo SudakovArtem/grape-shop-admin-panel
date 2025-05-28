@@ -19,6 +19,11 @@ const items = ref<NavigationMenuItem[][]>([
       to: '/products'
     },
     {
+      label: 'Статьи',
+      icon: 'i-lucide-newspaper',
+      to: '/articles'
+    },
+    {
       label: 'Заказы',
       icon: 'i-lucide-logs',
       to: '/orders'

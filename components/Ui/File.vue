@@ -88,10 +88,10 @@ const handleFileChange = (event: Event | DragEvent) => {
 
   if (!uploadFiles) return
 
-  // if (!props.multiple) {
-  //   files.value = []
-  //   chosenFiles.length = 0
-  // }
+  if (!props.multiple) {
+    files.value = []
+    chosenFiles.length = 0
+  }
 
   errors.value = []
 
@@ -165,7 +165,7 @@ defineExpose({ resetFileInput })
     @dragleave="setDragInactive"
     @drop.prevent.stop="onDrop"
   >
-    <div class="relative overflow-hidden h-48 rounded-3xl">
+    <div :class="['relative', 'overflow-hidden', 'rounded-3xl', { 'h-48': multiple, 'aspect-video': !multiple }]">
       <input
         :id="id"
         ref="input-file"
@@ -179,7 +179,7 @@ defineExpose({ resetFileInput })
       <label
         :for="id"
         :class="[
-          'w-full h-full flex items-center justify-center p-8 cursor-pointer border-4 rounded-3xl transition-colors',
+          'w-full h-full flex items-center justify-center p-8 cursor-pointer border-4 rounded-3xl transition-colors relative overflow-hidden',
           isDragActive
             ? 'border-dashed border-white text-white'
             : 'border-transparent bg-muted text-muted-foreground hover:border-white'
@@ -192,6 +192,13 @@ defineExpose({ resetFileInput })
           <span class="text-xs leading-tight">Формат файла: {{ getFileType }}</span>
           <span class="text-xs leading-tight">Размер файла: до {{ maxSize }} Мб</span>
         </span>
+        <img
+          v-if="files[0] && !multiple"
+          :src="files[0].url"
+          alt=""
+          class="object-cover h-full w-full absolute inset-0 z-1"
+          data-not-lazy
+        />
       </label>
     </div>
 
@@ -206,12 +213,13 @@ defineExpose({ resetFileInput })
         class="pt-6 mt-6 border-t border-muted-foreground/40 first:mt-0 first:pt-0 first:border-t-0"
       >
         <div class="flex items-center relative rounded-xl">
-          <div class="h-28 w-24 flex justify-center items-center overflow-hidden rounded-lg">
+          <div v-if="multiple" class="h-28 w-24 flex justify-center items-center overflow-hidden rounded-lg">
             <img :src="file.url" alt="" class="object-cover h-full w-full" data-not-lazy />
           </div>
 
-          <div class="flex flex-col ml-8">
+          <div :class="multiple && ['flex', 'flex-col', 'ml-8']">
             <span class="text-white text-sm mt-4">{{ `${file.name}.${file.fileExtension}` }}</span>
+            <span v-if="!multiple">&nbsp;</span>
             <span class="text-white text-sm">{{ `${file.size} KB` }}</span>
           </div>
 
