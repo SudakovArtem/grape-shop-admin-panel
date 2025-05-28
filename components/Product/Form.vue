@@ -2,8 +2,6 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 import type { Category, Product } from '@/types'
 import { type ProductSchema, productSchema } from '@configs/modules/validations/product'
-import MarkdownIt from 'markdown-it'
-import TurndownService from 'turndown'
 
 const { product = null, title = 'Новый продукт', isUpdate = false, loading = false } = defineProps<Product.FormProps>()
 
@@ -79,10 +77,9 @@ const uploadPreviews = async (productId: number, data: File[]): Promise<string[]
 }
 
 const prepareData = (state: ProductSchema) => {
-  const md = new MarkdownIt()
   return {
     name: state.name,
-    description: state.description ? md.render(state.description) : '',
+    description: state.description || '',
     cuttingPrice: state.cuttingPrice,
     seedlingPrice: state.seedlingPrice,
     categoryId: state.categoryId,
@@ -124,15 +121,13 @@ const updateProduct = async (id: number, state: ProductSchema) => {
 
 const updateProductData = (data: Product.Model | null) => {
   if (data !== null) {
-    const turndown = new TurndownService()
     const { description, ...rest } = state
-    console.log('rest', rest)
     Object.keys(rest).forEach((key) => {
       if (key in data!) {
         ;(state as any)[key] = (data as Product.Model)[key as keyof Product.Model]
       }
     })
-    state.description = turndown.turndown(data.description)
+    state.description = data.description
     productImages.value = []
   }
 }
@@ -202,9 +197,11 @@ onMounted(() => {
         </UFormField>
       </div>
 
-      <UFormField label="Описание" name="description">
-        <UTextarea v-model="state.description" autoresize class="w-full" size="xl" :maxrows="10" />
-      </UFormField>
+      <ClientOnly>
+        <UFormField label="Описание" name="description">
+          <UiEditor v-model="state.description" :disabled="isLoading" />
+        </UFormField>
+      </ClientOnly>
 
       <div class="grid grid-cols-2 gap-4">
         <UFormField label="Категория" name="categoryId" required>
