@@ -1,35 +1,33 @@
+import { type Endpoints, Request } from '@/types'
 
-import type { Request } from '@/types'
-import type { CartEndpoints } from '@/types'
-
-const cart: CartEndpoints = {
+const cart = {
   addItem(): Request.Config {
     return {
       url: '/cart',
-      method: 'POST'
+      method: Request.Methods.POST
     }
   },
 
   getCart(): Request.Config {
     return {
       url: '/cart',
-      method: 'GET'
+      method: Request.Methods.GET
     }
   },
 
-  updateItemQuantity(itemId: string): Request.Config {
+  updateItemQuantity(itemId: number): Request.Config {
     return {
       url: `/cart/${itemId}`,
-      method: 'PUT'
+      method: Request.Methods.PUT
     }
   },
 
-  removeItem(itemId: string): Request.Config {
+  removeItem(itemId: number): Request.Config {
     return {
       url: `/cart/${itemId}`,
-      method: 'DELETE'
+      method: Request.Methods.DELETE
     }
   }
-}
+} satisfies Endpoints['cart']
 
 export default cart

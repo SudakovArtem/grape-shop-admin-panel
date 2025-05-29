@@ -20,7 +20,7 @@ const breadcrumbs = computed<BreadcrumbItem[]>(() => [
 </script>
 
 <template>
-  <UContainer class="pt-6 pb-6">
+  <UContainer class="pt-6 pb-6 max-w-none">
     <UBreadcrumb :items="breadcrumbs" class="mb-6" />
     <ArticleForm title="Новая статья" />
   </UContainer>

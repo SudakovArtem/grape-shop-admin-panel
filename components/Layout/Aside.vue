@@ -47,7 +47,7 @@ const items = ref<NavigationMenuItem[][]>([
 </script>
 
 <template>
-  <UContainer class="pt-6 pb-6">
+  <UContainer class="pt-6 pb-6 max-w-none">
     <img class="w-50 mb-4 block" :src="Logo" alt="Logo" />
     <UNavigationMenu :items="items" class="data-[orientation=vertical]:w-48" orientation="vertical" />
   </UContainer>

@@ -1,42 +1,40 @@
+import { type Endpoints, Request } from '@/types'
 
-import type { Request } from '@/types'
-import type { CategoryEndpoints } from '@/types'
-
-const category: CategoryEndpoints = {
+const category = {
   getCategories(): Request.Config {
     return {
       url: '/categories',
-      method: 'GET'
+      method: Request.Methods.GET
     }
   },
 
   getCategoryById(id: string): Request.Config {
     return {
       url: `/categories/${id}`,
-      method: 'GET'
+      method: Request.Methods.GET
     }
   },
 
   createCategory(): Request.Config {
     return {
       url: '/categories',
-      method: 'POST'
+      method: Request.Methods.POST
     }
   },
 
   updateCategory(id: string): Request.Config {
     return {
       url: `/categories/${id}`,
-      method: 'PATCH'
+      method: Request.Methods.PATCH
     }
   },
 
   deleteCategory(id: string): Request.Config {
     return {
       url: `/categories/${id}`,
-      method: 'DELETE'
+      method: Request.Methods.DELETE
     }
   }
-}
+} satisfies Endpoints['category']
 
 export default category

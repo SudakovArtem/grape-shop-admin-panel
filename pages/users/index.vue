@@ -155,7 +155,7 @@ watch(search, onSearch)
 
 <template>
   <ClientOnly>
-    <UContainer class="pt-6 pb-6">
+    <UContainer class="pt-6 pb-6 max-w-none">
       <UBreadcrumb :items="breadcrumbs" />
       <div class="flex px-4 py-3.5 border-b border-accented justify-between gap-4">
         <UInput v-model="search" class="max-w-sm" placeholder="Поиск по email..." />

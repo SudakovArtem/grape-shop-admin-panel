@@ -1,4 +1,4 @@
-import { Request } from '@/types'
+import { type Endpoints, Request } from '@/types'
 
 export default {
   getProducts: (params: Request.Params): Request.Config => ({
@@ -22,4 +22,4 @@ export default {
     url: `/products/${id}`,
     method: Request.Methods.DELETE
   })
-}
+} satisfies Endpoints['product']

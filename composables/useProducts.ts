@@ -62,11 +62,23 @@ export default (settings: Settings) => {
     { accessorKey: 'color', header: 'Цвет' },
     { accessorKey: 'taste', header: 'Вкус' },
     {
-      accessorKey: 'inStock',
-      header: () => h('div', { class: 'text-center' }, 'Наличие'),
+      accessorKey: 'cuttingInStock',
+      header: () => h('div', { class: 'text-center' }, 'Черенок'),
       cell: ({ row }) => {
-        const color = row.getValue('inStock') ? 'success' : 'error'
-        return h(UBadge, { variant: 'subtle', color }, () => (row.getValue('inStock') ? 'В наличии' : 'Нет в наличии'))
+        const color = row.getValue('cuttingInStock') ? 'success' : 'error'
+        return h(UBadge, { variant: 'subtle', color }, () =>
+          row.getValue('cuttingInStock') ? 'В наличии' : 'Нет в наличии'
+        )
+      }
+    },
+    {
+      accessorKey: 'seedlingInStock',
+      header: () => h('div', { class: 'text-center' }, 'Саженец'),
+      cell: ({ row }) => {
+        const color = row.getValue('seedlingInStock') ? 'success' : 'error'
+        return h(UBadge, { variant: 'subtle', color }, () =>
+          row.getValue('seedlingInStock') ? 'В наличии' : 'Нет в наличии'
+        )
       }
     },
     {

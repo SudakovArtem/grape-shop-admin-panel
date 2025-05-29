@@ -1,16 +1,14 @@
+import { type Endpoints, Request } from '@/types'
 
-import type { Request } from '@/types'
-import type { UploadEndpoints } from '@/types'
-
-const upload: UploadEndpoints = {
+const upload = {
   uploadFile(folder?: string): Request.Config {
     const params = folder ? { folder } : undefined
     return {
       url: '/uploads',
-      method: 'POST',
+      method: Request.Methods.POST,
       params
     }
   }
-}
+} satisfies Endpoints['upload']
 
 export default upload

@@ -4,7 +4,7 @@ import type { CartEndpoints } from './CartEndpoints'
 import type { OrderEndpoints } from './OrderEndpoints'
 import type { CategoryEndpoints } from './CategoryEndpoints'
 import type { UploadEndpoints } from './UploadEndpoints'
-import ArticleEndpoints from '@configs/modules/Endpoints/ArticleEndpoints'
+import type { ArticleEndpoints } from './ArticleEndpoints'
 
 export interface Endpoints {
   user: UserEndpoints
@@ -13,5 +13,5 @@ export interface Endpoints {
   order: OrderEndpoints
   category: CategoryEndpoints
   upload: UploadEndpoints
-  article: typeof ArticleEndpoints
+  article: ArticleEndpoints
 }

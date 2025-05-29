@@ -1,19 +1,17 @@
+import { type Endpoints, Request } from '@/types'
 
-import type { Request } from '@/types'
-import type { OrderEndpoints } from '@/types'
-
-const order: OrderEndpoints = {
+const order = {
   createOrder(): Request.Config {
     return {
       url: '/orders',
-      method: 'POST'
+      method: Request.Methods.POST
     }
   },
 
   getOrders(params?: Request.Params): Request.Config {
     return {
       url: '/orders',
-      method: 'GET',
+      method: Request.Methods.GET,
       params
     }
   },
@@ -21,7 +19,7 @@ const order: OrderEndpoints = {
   getAllOrders(params?: Request.Params): Request.Config {
     return {
       url: '/orders/all',
-      method: 'GET',
+      method: Request.Methods.GET,
       params
     }
   },
@@ -29,16 +27,16 @@ const order: OrderEndpoints = {
   getOrderById(id: string): Request.Config {
     return {
       url: `/orders/${id}`,
-      method: 'GET'
+      method: Request.Methods.GET
     }
   },
 
   cancelOrder(id: string): Request.Config {
     return {
       url: `/orders/${id}/cancel`,
-      method: 'POST'
+      method: Request.Methods.POST
     }
   }
-}
+} satisfies Endpoints['order']
 
 export default order

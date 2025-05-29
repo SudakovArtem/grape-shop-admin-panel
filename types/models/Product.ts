@@ -3,8 +3,8 @@ export namespace Product {
     id: number
     name: string
     description?: string
-    cuttingPrice?: number
-    seedlingPrice?: number
+    cuttingPrice?: string
+    seedlingPrice?: string
     categoryId?: number
     categoryName?: string
     variety?: string
@@ -12,7 +12,8 @@ export namespace Product {
     berryShape?: string
     color?: string
     taste?: string
-    inStock?: boolean
+    cuttingInStock: number
+    seedlingInStock: number
     createdAt: string
     updatedAt: string
     images?: Product.Image[]
@@ -46,28 +47,30 @@ export namespace Product {
   export interface CreateDto {
     name: string
     description?: string
-    cuttingPrice?: number
-    seedlingPrice?: number
+    cuttingPrice?: string
+    seedlingPrice?: string
     categoryId?: number
     variety?: string
     maturationPeriod?: string
     berryShape?: string
     color?: string
     taste?: string
-    inStock?: boolean
+    cuttingInStock: number
+    seedlingInStock: number
   }
 
   export interface UpdateDto {
     name?: string
     description?: string
-    cuttingPrice?: number
-    seedlingPrice?: number
+    cuttingPrice?: string
+    seedlingPrice?: string
     categoryId?: number
     variety?: string
     maturationPeriod?: string
     berryShape?: string
     color?: string
     taste?: string
-    inStock?: boolean
+    cuttingInStock: number
+    seedlingInStock: number
   }
 }

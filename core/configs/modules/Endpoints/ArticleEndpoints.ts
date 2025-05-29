@@ -1,4 +1,4 @@
-import { Request } from '@/types'
+import { type Endpoints, Request } from '@/types'
 
 export default {
   createArticle: (): Request.Config => ({
@@ -30,4 +30,4 @@ export default {
     url: '/article-categories',
     method: Request.Methods.GET
   })
-}
+} satisfies Endpoints['article']

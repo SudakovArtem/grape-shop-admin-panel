@@ -11,7 +11,8 @@ export const productSchema = z.object({
   berryShape: z.string(),
   color: z.string(),
   taste: z.string(),
-  inStock: z.boolean()
+  cuttingInStock: z.number(),
+  seedlingInStock: z.number()
 })
 
 export type ProductSchema = z.output<typeof productSchema>

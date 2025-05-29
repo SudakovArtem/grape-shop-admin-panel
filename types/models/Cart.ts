@@ -1,11 +1,13 @@
 export namespace Cart {
   export interface Model {
     items: Item[]
+    totalCartPrice: number
+    totalItems: number
   }
 
   export interface AddItemDto {
     productId: number
-    type: 'cutting' | 'seedling'
+    type: Cart.Item['type']
     quantity?: number
   }
 
@@ -25,14 +27,9 @@ export namespace Cart {
     taste: string | null
     variety: string | null
     imageUrl: string | null
-    inStock: boolean | null
+    cuttingInStock: boolean
+    seedlingInStock: boolean
     unitPrice: number
     itemTotalPrice: number
-  }
-
-  export interface Response {
-    items: Item[]
-    totalCartPrice: number
-    totalItems: number
   }
 }

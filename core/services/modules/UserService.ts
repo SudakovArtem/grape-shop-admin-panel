@@ -13,6 +13,8 @@ export default (context: nuxtContext) => {
 
     private static API_SERVICE = context.$services.useAPI
 
+    private static CART_SERVICE = context.$services.cart
+
     async getProfile(): Promise<User.Model> {
       const response: User.Model = await UserService.USER_METHODS.getProfile()
       return response
@@ -65,6 +67,8 @@ export default (context: nuxtContext) => {
           resolve(user)
         }, 0)
       })
+
+      await UserService.CART_SERVICE.getCart()
 
       return result
     }

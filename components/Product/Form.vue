@@ -38,7 +38,8 @@ const state = reactive<ProductSchema>({
   berryShape: '',
   color: '',
   taste: '',
-  inStock: false
+  cuttingInStock: 0,
+  seedlingInStock: 0
 })
 
 const productImages = ref<File[]>([])
@@ -88,7 +89,8 @@ const prepareData = (state: ProductSchema) => {
     berryShape: state.berryShape,
     color: state.color,
     taste: state.taste,
-    inStock: state.inStock
+    cuttingInStock: state.cuttingInStock,
+    seedlingInStock: state.seedlingInStock
   }
 }
 
@@ -244,8 +246,11 @@ onMounted(() => {
         </UFormField>
       </div>
 
-      <UFormField>
-        <USwitch v-model="state.inStock" label="В наличии" />
+      <UFormField label="Черенков в наличии" name="seedlingPrice" required>
+        <UInputNumber v-model="state.cuttingInStock" :min="0" />
+      </UFormField>
+      <UFormField label="Саженцев в наличии" name="seedlingPrice" required>
+        <UInputNumber v-model="state.seedlingInStock" :min="0" />
       </UFormField>
 
       <div v-if="product?.images" class="text-sm">
