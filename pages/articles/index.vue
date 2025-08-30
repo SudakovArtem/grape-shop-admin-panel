@@ -80,31 +80,29 @@ watch(
 </script>
 
 <template>
-  <ClientOnly>
-    <UContainer class="pt-6 pb-6 max-w-none">
-      <UBreadcrumb :items="breadcrumbs" />
-      <div class="flex px-4 py-3.5 border-b border-accented justify-between gap-4">
-        <UInput v-model="search" class="max-w-sm" placeholder="Поиск по заголовку..." />
-        <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" to="/articles/new" />
-      </div>
-      <div class="w-full space-y-4 pb-4">
-        <UTable :data="list" class="flex-1" :columns="columns" :loading="isLoading">
-          <template #action-cell="{ row }">
-            <UDropdownMenu :items="getDropdownActions(row.original)">
-              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Actions" />
-            </UDropdownMenu>
-          </template>
-        </UTable>
-      </div>
-      <div class="flex justify-center border-t border-default pt-4">
-        <UPagination
-          v-model:page="pageNumber"
-          :items-per-page="pageSize"
-          :show-controls="false"
-          show-edges
-          :total="totalCount"
-        />
-      </div>
-    </UContainer>
-  </ClientOnly>
+  <UContainer class="pt-6 pb-6 max-w-none">
+    <UBreadcrumb :items="breadcrumbs" />
+    <div class="flex px-4 py-3.5 border-b border-accented justify-between gap-4">
+      <UInput v-model="search" class="max-w-sm" placeholder="Поиск по заголовку..." />
+      <UButton icon="i-lucide-plus" size="md" color="primary" variant="solid" to="/articles/new" />
+    </div>
+    <div class="w-full space-y-4 pb-4">
+      <UTable :data="list" class="flex-1" :columns="columns" :loading="isLoading">
+        <template #action-cell="{ row }">
+          <UDropdownMenu :items="getDropdownActions(row.original)">
+            <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Actions" />
+          </UDropdownMenu>
+        </template>
+      </UTable>
+    </div>
+    <div class="flex justify-center border-t border-default pt-4">
+      <UPagination
+        v-model:page="pageNumber"
+        :items-per-page="pageSize"
+        :show-controls="false"
+        show-edges
+        :total="totalCount"
+      />
+    </div>
+  </UContainer>
 </template>

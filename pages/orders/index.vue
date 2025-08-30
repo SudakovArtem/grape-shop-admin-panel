@@ -146,15 +146,13 @@ watch(
 </script>
 
 <template>
-  <ClientOnly>
-    <UContainer class="pt-6 pb-6 max-w-none">
-      <UBreadcrumb :items="breadcrumbs" />
-      <div class="w-full space-y-4 pb-4 pt-4">
-        <UTable :data="list" class="flex-1" :columns="columns" @select="onSelect" />
-      </div>
-      <div class="flex justify-center border-t border-default pt-4">
-        <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
-      </div>
-    </UContainer>
-  </ClientOnly>
+  <UContainer class="pt-6 pb-6 max-w-none">
+    <UBreadcrumb :items="breadcrumbs" />
+    <div class="w-full space-y-4 pb-4 pt-4">
+      <UTable :data="list" class="flex-1" :columns="columns" @select="onSelect" />
+    </div>
+    <div class="flex justify-center border-t border-default pt-4">
+      <UPagination v-model:page="pageNumber" :show-controls="false" show-edges :total="totalCount" />
+    </div>
+  </UContainer>
 </template>
