@@ -2,7 +2,7 @@ import useAuthStore from '@/stores/auth'
 import type { nuxtContext } from '@nuxt/types'
 import { type ApiClientService, Request } from '@/types'
 
-export default ({ $config, $services }: nuxtContext): ApiClientService => {
+export default ({ $config, $configs, $services }: nuxtContext): ApiClientService => {
   class UseFetchService implements ApiClientService {
     private token: string = ''
     private authStore = useAuthStore()
@@ -45,9 +45,9 @@ export default ({ $config, $services }: nuxtContext): ApiClientService => {
         })
 
         return result as T
-      } catch (error: unknown) {
+      } catch (error) {
         this.handleError(error)
-        return {} as T
+        throw error
       }
     }
 
@@ -98,7 +98,7 @@ export default ({ $config, $services }: nuxtContext): ApiClientService => {
     }
 
     private clearUserData(): void {
-      const { AUTHORIZATION_TOKEN_NAME } = this.config.constants
+      const { AUTHORIZATION_TOKEN_NAME } = $configs.constants
       const token = useCookie(AUTHORIZATION_TOKEN_NAME)
       token.value = null
       this.authStore.setAuth(false)

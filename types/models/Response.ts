@@ -10,6 +10,14 @@ export namespace Response {
     lastPage: number
   }
 
+  export type Error = {
+    data: {
+      message?: string
+      error?: string
+      statusCode?: number
+    }
+  }
+
   export interface WithMeta<T> extends Response.Default<T> {
     meta: Response.Pagination
   }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Response } from '@/types'
 
 definePageMeta({
   layout: 'login'
@@ -29,18 +30,21 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   isSending.value = true
 
   try {
-    const user = await userService.login({
+    const response = await userService.login({
       email: state.email,
       password: state.password
     })
 
-    if (user) {
+    if (response?.id) {
       toast.add({ title: 'Success', description: 'Вход в аккаунт выполнен успешно.', color: 'success' })
+      await router.push(fromUrl.value || '/')
     }
-
-    await router.push(fromUrl.value || '/')
   } catch (error) {
-    toast.add({ title: 'Error', description: 'Произошла ошибка при входе в аккаунт.', color: 'error' })
+    toast.add({
+      title: 'Error',
+      description: (error as Response.Error)?.data.message ?? 'Произошла ошибка при входе в аккаунт.',
+      color: 'error'
+    })
     console.error(error)
   } finally {
     isSending.value = false
